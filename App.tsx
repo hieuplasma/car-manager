@@ -3,6 +3,10 @@ import { ActivityIndicator, StatusBar, View, Text } from 'react-native';
 import reduxConfig from './src/redux/config-store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { RootNavigation } from '@navigation';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import SafeAreaView from 'react-native-safe-area-view';
+import { colors } from '@common';
 
 interface IState {
   isLoading: boolean,
@@ -49,28 +53,25 @@ class App extends React.PureComponent<IProps, IState> {
               borderRadius: 8,
               padding: 16
             }}>
-            <ActivityIndicator size="large" color={'red'} />
-            <Text style={{ fontWeight: 'bold', color: 'red', marginTop: 12 }}>{"Đang đồng bộ dữ liệu"}</Text>
+            <ActivityIndicator size="large" color={colors.mainBtn} />
+            <Text style={{ fontWeight: 'bold', color: colors.mainBtn, marginTop: 12 }}>{"Đang đồng bộ dữ liệu"}</Text>
           </View>
         </View>
       );
     }
     return (
-      <View style={{ flex: 1, }}>
-        <StatusBar translucent={true} barStyle={'dark-content'} />
-        <Provider store={store.store}>
-          <PersistGate
-            // loading={<SplashScreen/>}
-            persistor={store.persistor}>
-            <StatusBar barStyle={'light-content'} />
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <Text>
-                {"CarManager"}
-              </Text>
-            </View>
-          </PersistGate>
-        </Provider>
-      </View>
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1 }}>
+          <StatusBar translucent={false} barStyle={'light-content'} />
+          <Provider store={store.store}>
+            <PersistGate
+              // loading={<SplashScreen/>}
+              persistor={store.persistor}>
+              <RootNavigation />
+            </PersistGate>
+          </Provider>
+        </SafeAreaView>
+      </SafeAreaProvider>
     );
   }
 }

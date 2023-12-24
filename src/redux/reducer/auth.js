@@ -5,7 +5,12 @@ const initialState = {
   accessToken: "",
   remember: true,
   email: "",
-  password: ""
+  password: "",
+  "idTangKhNcc": 0,
+  "maKh": "",
+  "tenKh": "",
+  "diaChi": null,
+  "loaiKhach": 0
 }
 
 // Create Redux state slice
@@ -14,15 +19,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     updateToken: (state, action) => {
-      state.accessToken = action.payload.token
-      state.email = doNotExits(action.payload.email) ? state.email : action.payload.email
-      state.password = doNotExits(action.payload.password) ? state.password : action.payload.password
+      for (const key in action.payload) {
+        state[key] = action.payload[key] || state[key]
+      }
     },
     removeToken: (state) => {
-      state.accessToken = ""
-      state.email = ""
-      state.password = ""
-    },
+      state = initialState
+    }
   },
 })
 

@@ -18,7 +18,9 @@ module.exports = {
         alias: {
           "@redux":["./src/redux"],
           "@utils":["./src/utils"],
-          "@screens":["./src/screens"]
+          "@screens":["./src/screens"],
+          "@navigation":["./src/navigation"],
+          "@common":["./src/common"]
         }
       }
     ]
