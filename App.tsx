@@ -7,6 +7,7 @@ import { RootNavigation } from '@navigation';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SafeAreaView from 'react-native-safe-area-view';
 import { colors } from '@common';
+import { NativeBaseProvider, Box } from "native-base";
 
 interface IState {
   isLoading: boolean,
@@ -60,18 +61,22 @@ class App extends React.PureComponent<IProps, IState> {
       );
     }
     return (
-      <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1 }}>
-          <StatusBar translucent={false} barStyle={'light-content'} />
-          <Provider store={store.store}>
-            <PersistGate
-              // loading={<SplashScreen/>}
-              persistor={store.persistor}>
-              <RootNavigation />
-            </PersistGate>
-          </Provider>
-        </SafeAreaView>
-      </SafeAreaProvider>
+      <NativeBaseProvider>
+        <Box flex={1}>
+          <SafeAreaProvider>
+            <SafeAreaView style={{ flex: 1 }}>
+              <StatusBar translucent={false} barStyle={'light-content'} />
+              <Provider store={store.store}>
+                <PersistGate
+                  // loading={<SplashScreen/>}
+                  persistor={store.persistor}>
+                  <RootNavigation />
+                </PersistGate>
+              </Provider>
+            </SafeAreaView>
+          </SafeAreaProvider>
+        </Box>
+      </NativeBaseProvider>
     );
   }
 }

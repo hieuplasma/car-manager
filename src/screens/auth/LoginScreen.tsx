@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import { AuthStackParamList, NavigationUtils } from "@navigation";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -15,13 +15,20 @@ type NavigationProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 const FAKE_USER = [
     {
         "idTangKhNcc": 1,
-        "maKh": "Haid",
+        "maKh": "KH_0001",
         "tenKh": "Công ty TNHH Haid",
         "diaChi": null,
-        "loaiKhach": 1
+        "loaiKhach": 2
     },
     {
         "idTangKhNcc": 2,
+        "maKh": "KH_0002",
+        "tenKh": "Công ty TNHH Hiếu",
+        "diaChi": null,
+        "loaiKhach": 2
+    },
+    {
+        "idTangKhNcc": 3,
         "maKh": "SS",
         "tenKh": "Server",
         "diaChi": null,
@@ -41,8 +48,8 @@ export const LoginScreen = React.memo(() => {
     const handleLogin = useCallback(async () => {
 
         const customer = FAKE_USER.find(it => it.maKh == username)
+        if (!customer) return Alert.alert('Không tồn tại khách hàng này!')
         dispacth(updateToken(customer))
-
         NavigationUtils.resetGlobalStackWithScreen(navigation, 'Home');
     }, [username, password, navigation]);
 
