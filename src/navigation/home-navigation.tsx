@@ -15,7 +15,7 @@ export function HomeNavigation() {
     const idCustomer = useSelector((state: any) => state.authReducer.loaiKhach)
     return (
         <Stack.Navigator
-            initialRouteName={idCustomer == 2 ? 'CarControl' : 'DriverScreen'}
+            initialRouteName={idCustomer == 'manager' ? 'CarControl' : 'DriverScreen'}
             screenOptions={{
                 header: undefined
             }}
@@ -38,7 +38,6 @@ export function HomeNavigation() {
                     animationEnabled: true,
                 }}
             />
-
         </Stack.Navigator>
     )
 }

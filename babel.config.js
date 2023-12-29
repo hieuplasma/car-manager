@@ -20,7 +20,8 @@ module.exports = {
           "@utils":["./src/utils"],
           "@screens":["./src/screens"],
           "@navigation":["./src/navigation"],
-          "@common":["./src/common"]
+          "@common":["./src/common"],
+          "@components":["./src/components"]
         }
       }
     ]

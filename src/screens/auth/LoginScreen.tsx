@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native'
 import { AuthStackParamList, NavigationUtils } from "@navigation";
 import { useNavigation } from "@react-navigation/native";
@@ -14,25 +14,16 @@ type NavigationProp = StackNavigationProp<AuthStackParamList, 'Login'>;
 
 const FAKE_USER = [
     {
-        "idTangKhNcc": 1,
-        "maKh": "KH_0001",
-        "tenKh": "Công ty TNHH Haid",
-        "diaChi": null,
-        "loaiKhach": 2
+        "id": 1,
+        "maKh": "MinhTiep",
+        "tenKh": "Công ty TNHH Minh Tiệp",
+        "loaiKhach": 'manager'
     },
     {
-        "idTangKhNcc": 2,
-        "maKh": "KH_0002",
-        "tenKh": "Công ty TNHH Hiếu",
-        "diaChi": null,
-        "loaiKhach": 2
-    },
-    {
-        "idTangKhNcc": 3,
-        "maKh": "SS",
-        "tenKh": "Server",
-        "diaChi": null,
-        "loaiKhach": 2
+        "id": 2,
+        "maKh": "MinhHieu",
+        "tenKh": "Công ty vận tải Minh Hiếu",
+        "loaiKhach": 'driver'
     }
 ]
 
@@ -47,7 +38,7 @@ export const LoginScreen = React.memo(() => {
 
     const handleLogin = useCallback(async () => {
 
-        const customer = FAKE_USER.find(it => it.maKh == username)
+        const customer = FAKE_USER.find(it => it.maKh.toUpperCase() == username.toUpperCase())
         if (!customer) return Alert.alert('Không tồn tại khách hàng này!')
         dispacth(updateToken(customer))
         NavigationUtils.resetGlobalStackWithScreen(navigation, 'Home');
@@ -69,7 +60,7 @@ export const LoginScreen = React.memo(() => {
                 value={password}
                 onChangeText={text => setPassword(text)}
             />
-            <Button title="Login" onPress={handleLogin} />
+            <Button title="Đăng nhập" onPress={handleLogin} />
         </View>
     )
 })
