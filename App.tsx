@@ -240,11 +240,155 @@ class App extends React.PureComponent<IProps, IState> {
                 "ma_Nha_CC": "Phú An",
                 "ngay_Chay": null,
                 "nha_CC_Chot": null,
-                "phe_Duyet": null,
+                "phe_Duyet": 1,
                 "pS_Chi": null,
                 "pS_Thu": null,
                 "so_seal_Chi": null,
                 "trong_Tai": 20
+              }
+            ]
+          }
+        });
+
+        this.get('/api/LAI_XE_NHAN_CHUYEN', () => {
+          return {
+            data: [
+              {
+                "iD_Tang_VT": 1,
+                "bien_Xe": 2,
+                "ma_Xe": "Phú An 2",
+                "bien_So_Xe": "BJH2456 Phú An 2",
+                "cuoc_Thu": 0,
+                "cuoc_Tra": 0,
+                "diem_Di": 1,
+                "ten_Dia_Diem_DI": "Hà Nội",
+                "diem_Nhan": 1,
+                "ten_Dia_Diem_Nhan": "Hà Nội",
+                "ghi_Chu": null,
+                "giao_nop_BB": 0,
+                "gio_Dat_Xe": null,
+                "ma_KH": "Haid",
+                "khach_Hang": 1,
+                "ten_KH": "Công ty TNHH Haid",
+                "loai_KH": 1,
+                "nha_CC": 2,
+                "ma_Nha_CC": "Phú An",
+                "ngay_Chay": "2023-12-24T00:00:00",
+                "nha_CC_Chot": 0,
+                "phe_Duyet": 1,
+                "pS_Chi": 0,
+                "pS_Thu": 0,
+                "so_seal_Chi": null,
+                "trong_Tai": 10,
+                "de_Nghi_TT_ID": null
+              },
+              {
+                "iD_Tang_VT": 2,
+                "bien_Xe": 1,
+                "ma_Xe": "Phú An 1",
+                "bien_So_Xe": "BHK3134 Phú An 1",
+                "cuoc_Thu": 0,
+                "cuoc_Tra": 0,
+                "diem_Di": 1,
+                "ten_Dia_Diem_DI": "Hà Nội",
+                "diem_Nhan": 1,
+                "ten_Dia_Diem_Nhan": "Hà Nội",
+                "ghi_Chu": null,
+                "giao_nop_BB": 0,
+                "gio_Dat_Xe": null,
+                "ma_KH": "Haid",
+                "khach_Hang": 1,
+                "ten_KH": "Công ty TNHH Haid",
+                "loai_KH": 2,
+                "nha_CC": 2,
+                "ma_Nha_CC": "Phú An",
+                "ngay_Chay": "2023-12-24T00:00:00",
+                "nha_CC_Chot": 0,
+                "phe_Duyet": 1,
+                "pS_Chi": 0,
+                "pS_Thu": 0,
+                "so_seal_Chi": null,
+                "trong_Tai": 1,
+                "de_Nghi_TT_ID": null
+              }
+            ]
+          }
+        });
+
+        this.get('/api/PHI_PHAT_SINH', () => {
+          return {
+            data: [
+              {
+                "iD_Tang_Phi": 1,
+                "hd": null,
+                "noi_Dung_Phi": "Thêm điểm ",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 2,
+                "hd": null,
+                "noi_Dung_Phi": "2 Chiều",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 3,
+                "hd": null,
+                "noi_Dung_Phi": "Kiểm hoá",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 4,
+                "hd": null,
+                "noi_Dung_Phi": "Tăng cường",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 5,
+                "hd": null,
+                "noi_Dung_Phi": "Lưu đêm",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 6,
+                "hd": null,
+                "noi_Dung_Phi": "Lưu ngày",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 7,
+                "hd": null,
+                "noi_Dung_Phi": "Chị hộ khách",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 8,
+                "hd": null,
+                "noi_Dung_Phi": "Thuê người bốc xếp",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 9,
+                "hd": null,
+                "noi_Dung_Phi": "Hải quan",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 10,
+                "hd": null,
+                "noi_Dung_Phi": "Trả tiền hộ khách",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 11,
+                "hd": null,
+                "noi_Dung_Phi": "Vé xe phát sinh",
+                "trang_Thai": null
+              },
+              {
+                "iD_Tang_Phi": 12,
+                "hd": null,
+                "noi_Dung_Phi": "Tiền luật",
+                "trang_Thai": null
               }
             ]
           }

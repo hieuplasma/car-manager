@@ -17,12 +17,12 @@ export const objmap = [
     { "default": "Không có thông tin", "key": "ma_Nha_CC", "title": "Mã nhà cung cấp" },
     { "default": "Không có thông tin", "key": "nha_CC_Chot", "title": undefined },
     { "default": "Không có thông tin", "key": "gio_Dat_Xe", "title": undefined },
-    { "default": "Không có ghi chú", "key": "ghi_Chu", "title": "Ghi chú" },
 
     { "default": 0, "key": "cuoc_Thu", "title": "Cước thu" },
     { "default": 0, "key": "cuoc_Tra", "title": "Cước trả" },
     { "default": "Chưa có số seal chi", "key": "so_seal_Chi", "title": "Số seal chi" },
-    { "default": "Chưa phê duyệt", "key": "phe_Duyet", "title": "Trạng thái duyệt" },
+    // { "default": "Chưa phê duyệt", "key": "phe_Duyet", "title": "Trạng thái duyệt" },
+    { "default": "Không có ghi chú", "key": "ghi_Chu", "title": "Ghi chú" },
 
     { "default": "Không có thông tin", "key": "giao_nop_BB", "title": undefined },
     { "default": "Không có thông tin", "key": "pS_Chi", "title": undefined },

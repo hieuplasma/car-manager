@@ -82,6 +82,17 @@ export const CarControl = React.memo(() => {
         )
     }, [user])
 
+    const renderSpecialKey = useCallback((key: string, value: string | number) => {
+        if (key == 'ngay_Chay') return new Date(value).toLocaleDateString('vi')
+        if (key == 'phe_Duyet') {
+            if (value == 0) return 'Đã từ chối'
+            if (value == 1) return 'Chưa phê duyệt'
+            if (value == 2) return 'Đã phê duyệt'
+        }
+        return value
+    }, [])
+
+
     const renderBuses = useCallback(({ item, index }: any) => {
         const rows = []
         for (const element of objmap) {
@@ -97,6 +108,8 @@ export const CarControl = React.memo(() => {
                 </View>
             )
         }
+        const colorConfirm = item.phe_Duyet == 0 ? 'red' : (item.phe_Duyet == 1 ? 'orange' : 'green')
+        
         return (
             <View style={styles.rowItem}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: -5 }}>
@@ -109,6 +122,14 @@ export const CarControl = React.memo(() => {
                     </TouchableOpacity>
                 </View>
                 {rows}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 4 }}>
+                    <Text>
+                        {'Trạng thái duyệt' + ': '}
+                    </Text>
+                    <Text style={{color: colorConfirm}}>
+                        {renderSpecialKey('phe_Duyet', item['phe_Duyet'])}
+                    </Text>
+                </View>
             </View>
         )
     }, [])
