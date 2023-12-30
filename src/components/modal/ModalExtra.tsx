@@ -1,9 +1,10 @@
-import { colors, dimensions } from "@common";
+import { colors, dimensions, images } from "@common";
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Text, ScrollView } from "react-native";
 import Modal from "react-native-modal";
 import { SelectBtmSheet } from "../select";
 import { MyInput } from "../textinput";
+import FastImage from "react-native-fast-image";
 
 interface ModalProps {
     modalVisisble: boolean,
@@ -27,8 +28,6 @@ export const ModalExtra = React.memo(({
     LIST_EXTRA_TYPE
 }: ModalProps) => {
 
-    console.log(currentBuseId)
-
     const cancelModal = useCallback(() => {
         onCancel()
     }, [onCancel])
@@ -36,11 +35,10 @@ export const ModalExtra = React.memo(({
     const [currentExtra, setCurrentExtra] = useState<any>({})
 
     const [money, setMoney] = useState<string | number>(0)
-    const [extraTypeId, setExtraTypeID] = useState<number | string>(0)
+    const [extraTypeId, setExtraTypeID] = useState<any[]>([0])
 
     useEffect(() => {
         const tmp = LIST_EXTRA.find(it => it.idTangDeNghi == currentExtraId)
-        console.log('tmp', tmp, currentBuseId, currentExtraId)
         if (tmp) {
             setCurrentExtra(tmp)
             setMoney(tmp.so_tien)
@@ -66,6 +64,25 @@ export const ModalExtra = React.memo(({
         onCancel()
     }, [onCancel, currentExtra, money, extraTypeId, currentBuseId])
 
+    const onChangeExtraTypeId = useCallback((id: number, index: number) => {
+        let tmp = [...extraTypeId]
+        tmp[index] = id
+        setExtraTypeID(tmp)
+    }, [extraTypeId])
+
+    const addExtraType = useCallback(() => {
+        let tmp = [...extraTypeId]
+        tmp.push(0)
+        setExtraTypeID(tmp)
+    }, [extraTypeId])
+
+    const removeExtraType = useCallback((index: number) => {
+        if (extraTypeId.length == 1) return
+        let tmp = [...extraTypeId]
+        tmp[index] = -1
+        setExtraTypeID(tmp)
+    }, [extraTypeId])
+
     return (
         <Modal
             // animationIn={"fadeIn"}
@@ -90,17 +107,39 @@ export const ModalExtra = React.memo(({
                         onChangeValue={setMoney}
                         keyboardType={"numeric"}
                     />
-                    <SelectBtmSheet
-                        title={"Chọn loại phí"}
-                        selectedValue={extraTypeId}
-                        onValueChange={setExtraTypeID}
-                        listChoose={LIST_EXTRA_TYPE}
-                        keyValue={'iD_Tang_Phi'}
-                        keyLabel={'noi_Dung_Phi'}
-                    />
 
+                    <Text>
+                        {"(Các) Loại phát sinh:"}
+                    </Text>
+                    <ScrollView>
+                        <View>
+                        {
+                            extraTypeId.map((item, index) => (
+                                item >= 0 &&
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} key={String(index)}>
+                                    <SelectBtmSheet
+                                        title={""}
+                                        selectedValue={item}
+                                        onValueChange={(id) => onChangeExtraTypeId(Number(id), index)}
+                                        listChoose={LIST_EXTRA_TYPE}
+                                        keyValue={'iD_Tang_Phi'}
+                                        keyLabel={'noi_Dung_Phi'}
+                                        width={'70%'}
+                                    />
+                                    <TouchableOpacity onPress={() => removeExtraType(index)} style={{ marginLeft: -100 }}>
+                                        <FastImage style={{ width: 16, height: 16 }} source={images.remove} />
+                                    </TouchableOpacity>
+                                </View>
+                            ))
+                        }
+                        </View>
+                    </ScrollView>
 
-                    <View style={{ flex: 1 }} />
+                    <View style={{ flexDirection: 'row-reverse' }}>
+                        <TouchableOpacity onPress={addExtraType}>
+                            <FastImage style={{ width: 16, height: 16 }} source={images.plus} tintColor={'green'} />
+                        </TouchableOpacity>
+                    </View>
 
                     <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }}>
                         <TouchableOpacity
@@ -143,7 +182,7 @@ const styles = StyleSheet.create({
     },
     modalView: {
         margin: 10, width: dimensions.widthScreen - 20,
-        height: 300,
+        height: 400,
         borderRadius: 10, backgroundColor: 'white',
         padding: 10
     },

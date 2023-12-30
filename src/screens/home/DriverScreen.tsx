@@ -7,7 +7,7 @@ import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from '
 import SafeAreaView from "react-native-safe-area-view";
 import { useSelector } from "react-redux";
 import FastImage from 'react-native-fast-image'
-import { displayLocalNotification } from "@utils";
+import { displayLocalNotification, formatMoney } from "@utils";
 import { objmap } from "./mapping";
 import { ModalConfirmBuse, ModalExtra } from "@components";
 
@@ -63,6 +63,7 @@ export const DriverScreen = React.memo(() => {
 
     const renderSpecialKey = useCallback((key: string, value: string | number) => {
         if (key == 'ngay_Chay') return new Date(value).toLocaleDateString('vi')
+        if (key == 'trong_Tai' || key == 'cuoc_Thu' || key == 'cuoc_Chi') return formatMoney(Number(value))
         if (key == 'phe_Duyet') {
             if (value == 0) return 'Đã từ chối'
             if (value == 1) return 'Chưa phê duyệt'
@@ -164,15 +165,12 @@ export const DriverScreen = React.memo(() => {
             if (element.idTangDeNghi > maxId) maxId = element.idTangDeNghi
         }
         tmp.push({ ...extra, idTangDeNghi: maxId + 1 })
-        console.log('tmp list extra', tmp)
         setListExtra(tmp)
 
         let tmp2 = [...listBuses]
         const index2 = tmp2.findIndex(it => it.iD_Tang_VT == extra.iD_Tang_VT)
         tmp2[index2].de_Nghi_TT_ID = maxId + 1
         setListBuses(tmp2)
-
-        console.log(tmp2[index2])
     }, [listExtra, listBuses])
 
     const updateExtra = useCallback(async (extra: any) => {

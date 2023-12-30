@@ -3,13 +3,13 @@ import { colors, dimensions, images } from "@common";
 import { HomeStackParamList, NavigationUtils } from "@navigation";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import SafeAreaView from "react-native-safe-area-view";
 import { useSelector } from "react-redux";
 import FastImage from 'react-native-fast-image'
 import Modal from "react-native-modal";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import { displayLocalNotification } from "@utils";
+import { displayLocalNotification, formatMoney } from "@utils";
 import { MyInput, SelectBtmSheet } from "@components";
 import { objmap } from "./mapping";
 
@@ -53,8 +53,14 @@ export const CarControl = React.memo(() => {
                     if (element.loaiKhach == 1) customer.push(element)
                     if (element.loaiKhach == 2) supply.push(element)
                 }
-                setListSupply(supply)
+                // setListSupply(supply)
                 setListCustomer(customer)
+            })
+
+        await fetch('/api/NHA_CUNG_CAP_VÀ_XE_CONG_TY')
+            .then((res) => res.json())
+            .then((json: any) => {
+                setListSupply(json.data)
             })
 
 
@@ -82,18 +88,42 @@ export const CarControl = React.memo(() => {
         )
     }, [user])
 
+    const sendToDriver = useCallback((buse: any) => {
+        Alert.alert(
+            'Gửi lái xe',
+            'Gửi chuyến xe đến tài xế',
+            [
+                {
+                    text: 'Huỷ',
+                    onPress: () => Alert.alert('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Xác nhận',
+                    onPress: () => {
+                        let newBuse = { ...buse }
+                        newBuse.phe_Duyet = 1
+                        updateBuse(newBuse, true)
+                    },
+                    style: 'default',
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () => { }
+            },
+        );
+    }, [listBuses])
+
     const renderSpecialKey = useCallback((key: string, value: string | number) => {
         if (key == 'ngay_Chay') return new Date(value).toLocaleDateString('vi')
-        if (key == 'phe_Duyet') {
-            if (value == 0) return 'Đã từ chối'
-            if (value == 1) return 'Chưa phê duyệt'
-            if (value == 2) return 'Đã phê duyệt'
-        }
+        if (key == 'trong_Tai' || key == 'cuoc_Thu' || key == 'cuoc_Chi') return formatMoney(Number(value))
         return value
     }, [])
 
-
     const renderBuses = useCallback(({ item, index }: any) => {
+
+        if (item.phe_Duyet) return <></>
         const rows = []
         for (const element of objmap) {
             if (!element.title) continue
@@ -103,13 +133,12 @@ export const CarControl = React.memo(() => {
                         {element.title + ': '}
                     </Text>
                     <Text>
-                        {item[element.key] || element.default}
+                        {renderSpecialKey(element.key, item[element.key]) || element.default}
                     </Text>
                 </View>
             )
         }
-        const colorConfirm = item.phe_Duyet == 0 ? 'red' : (item.phe_Duyet == 1 ? 'orange' : 'green')
-        
+
         return (
             <View style={styles.rowItem}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: -5 }}>
@@ -122,17 +151,24 @@ export const CarControl = React.memo(() => {
                     </TouchableOpacity>
                 </View>
                 {rows}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 4 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 4, alignItems: 'center' }}>
                     <Text>
-                        {'Trạng thái duyệt' + ': '}
+                        {'Trạng thái' + ': '}
                     </Text>
-                    <Text style={{color: colorConfirm}}>
-                        {renderSpecialKey('phe_Duyet', item['phe_Duyet'])}
+                    <View style={{ flex: 1 }} />
+                    <Text style={{ color: 'orange' }}>
+                        {"Chưa điều xe"}
                     </Text>
+                    <TouchableOpacity
+                        style={{ padding: 5, borderRadius: 5, backgroundColor: colors.mainBtn, marginLeft: 10 }}
+                        onPress={() => sendToDriver(item)}>
+                        <Text style={{ color: 'white' }}>{"Gửi lái xe"}</Text>
+                    </TouchableOpacity>
                 </View>
+
             </View>
         )
-    }, [])
+    }, [listBuses])
 
     const onCancel = useCallback(() => {
         setIsVisible(false)
@@ -156,17 +192,19 @@ export const CarControl = React.memo(() => {
         })
     }, [listBuses])
 
-    const updateBuse = useCallback(async (buse: any) => {
+    const updateBuse = useCallback(async (buse: any, send?: boolean) => {
         let tmp = [...listBuses]
         const index = tmp.findIndex(it => it.iD_Tang_VT == buse.iD_Tang_VT)
         tmp[index] = buse
         setListBuses(tmp)
-        displayLocalNotification({
-            title: 'Đã sửa chuyến đi',
-            body: 'Đã cập nhật thông tin cho chuyến đi #' + buse.iD_Tang_VT,
-            messageId: buse.iD_Tang_VT,
-            dataType: 'update'
-        })
+        if (send) {
+            displayLocalNotification({
+                title: 'Đã gửi chuyến đi',
+                body: 'Đã gửi chuyến đi #' + buse.iD_Tang_VT + " đến tài xế",
+                messageId: buse.iD_Tang_VT,
+                dataType: 'update'
+            })
+        }
     }, [listBuses])
 
     return (
@@ -225,18 +263,18 @@ const ModalAdd = React.memo(({
     const currentDate = new Date();
     const maxDate = new Date(new Date().getTime() + 30 * 86400 * 1000)
 
-
     const [visibleDate, setVisisbleDate] = useState(false)
-    const [date, setDate] = useState(currentDate)
+    const [date, setDate] = useState(currentBuse && currentBuse.ngay_Chay ? new Date(currentBuse.ngay_Chay) : currentDate)
     const [startPointId, setStartPointId] = useState(currentBuse ? currentBuse.diem_Di : String(LIST_POSISTION[0].idTangDiemNhanGiao))
     const [endPointId, setEndPointId] = useState(currentBuse ? currentBuse.diem_Nhan : String(LIST_POSISTION[0].idTangDiemNhanGiao))
     const [customerId, setCustomerId] = useState(currentBuse ? currentBuse.khach_Hang : String(LIST_CUSTOMER[0].idTangKhNcc))
-    const [supplyId, setSupplyId] = useState(currentBuse ? currentBuse.nha_CC : String(LIST_CUSTOMER[0].idTangKhNcc))
+    const [supplyId, setSupplyId] = useState(currentBuse ? currentBuse.ma_Nha_CC : String(LIST_SUPPLY[0].ma_Nha_CC))
 
     const [listChooseCar, setListChooseCar] = useState<any[]>([])
     useEffect(() => {
-        const arr = [...LIST_CAR]
-        setListChooseCar(arr.filter(it => it.nha_CC_ID == supplyId))
+        const car = supplyId.split('-')
+        setCarCode(car[0])
+        setCarSign(car[1])
     }, [supplyId, LIST_CAR])
 
     const [carId, setCarId] = useState<any>('')
@@ -244,8 +282,9 @@ const ModalAdd = React.memo(({
     const [carSign, setCarSign] = useState(currentBuse && currentBuse.bien_So_Xe ? currentBuse.bien_So_Xe : 'Chưa chọn xe')
 
     const onChangeCar = useCallback((id: string | number) => {
+        console.log(id)
         setCarId(id)
-        const car = listChooseCar.find(it => it.idTangBienXe == id)
+        const car = listChooseCar.find(it => it.ma_Nha_CC == id)
         setCarCode(car.maXe)
         setCarSign(car.bienXe)
     }, [listChooseCar])
@@ -263,7 +302,7 @@ const ModalAdd = React.memo(({
         if (!currentBuse) {
             addBuse({
                 ...currentBuse,
-                'ngay_Chay': date.toLocaleDateString('en-GB'),
+                'ngay_Chay': date,
                 'ten_Dia_Diem_DI': LIST_POSISTION.find(it => it.idTangDiemNhanGiao == Number(startPointId))?.tenDiaDiem,
                 'ten_Dia_Diem_Nhan': LIST_POSISTION.find(it => it.idTangDiemNhanGiao == Number(endPointId))?.tenDiaDiem,
                 'ma_KH': LIST_CUSTOMER.find(it => it.idTangKhNcc == Number(customerId))?.maKh,
@@ -271,7 +310,7 @@ const ModalAdd = React.memo(({
                 'diem_Di': Number(startPointId),
                 "diem_Nhan": Number(endPointId),
                 "khach_Hang": Number(customerId),
-                "nha_CC": Number(supplyId),
+                "ma_Nha_CC": supplyId,
                 'trong_Tai': Number(payload),
                 'cuoc_Thu': Number(collectfee),
                 'cuoc_Chi': Number(cost),
@@ -282,7 +321,7 @@ const ModalAdd = React.memo(({
             updateBuse({
                 ...currentBuse,
                 'iD_Tang_VT': currentBuse.iD_Tang_VT,
-                'ngay_Chay': date.toLocaleDateString('en-GB'),
+                'ngay_Chay': date,
                 'ten_Dia_Diem_DI': LIST_POSISTION.find(it => it.idTangDiemNhanGiao == Number(startPointId))?.tenDiaDiem,
                 'ten_Dia_Diem_Nhan': LIST_POSISTION.find(it => it.idTangDiemNhanGiao == Number(endPointId))?.tenDiaDiem,
                 'ma_KH': LIST_CUSTOMER.find(it => it.idTangKhNcc == Number(customerId))?.maKh,
@@ -290,7 +329,7 @@ const ModalAdd = React.memo(({
                 'diem_Di': Number(startPointId),
                 "diem_Nhan": Number(endPointId),
                 "khach_Hang": Number(customerId),
-                "nha_CC": Number(supplyId),
+                "ma_Nha_CC": supplyId,
                 'trong_Tai': Number(payload),
                 'cuoc_Thu': Number(collectfee),
                 'cuoc_Chi': Number(cost),
@@ -302,7 +341,7 @@ const ModalAdd = React.memo(({
         currentBuse,
         startPointId, endPointId,
         customerId, supplyId,
-        payload, collectfee, cost, seal,])
+        payload, collectfee, cost, seal, date])
 
     const handleDatePicked = useCallback((dateChoose: Date) => {
         setDate(dateChoose)
@@ -332,7 +371,7 @@ const ModalAdd = React.memo(({
                             <TouchableOpacity
                                 style={styles.dropdown}
                                 onPress={() => setVisisbleDate(true)}>
-                                <Text>{date.toLocaleDateString()}</Text>
+                                <Text>{date.toLocaleDateString('vi')}</Text>
                             </TouchableOpacity>
                         </View>
                         <SelectBtmSheet
@@ -364,8 +403,8 @@ const ModalAdd = React.memo(({
                             selectedValue={supplyId}
                             onValueChange={setSupplyId}
                             listChoose={LIST_SUPPLY}
-                            keyValue={'idTangKhNcc'}
-                            keyLabel={'tenKh'}
+                            keyValue={'ma_Nha_CC'}
+                            keyLabel={'ma_Nha_CC'}
                         />
                         {listChooseCar.length > 0 &&
                             <SelectBtmSheet
@@ -379,7 +418,7 @@ const ModalAdd = React.memo(({
                         }
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Text>{`Mã xe: ${carCode}`}</Text>
-                            <Text>{`Biển xe: ${carSign}`}</Text>
+                            <Text>{`Biển xe: ${carSign || 'Không có thông tin'}`}</Text>
                         </View>
                         <MyInput
                             title={"Trọng tải"}
@@ -427,7 +466,7 @@ const ModalAdd = React.memo(({
                         </TouchableOpacity>
                     </View>
                     <DateTimePicker
-                        date={currentDate}
+                        date={date}
                         maximumDate={maxDate}
                         isVisible={visibleDate}
                         onConfirm={handleDatePicked}
